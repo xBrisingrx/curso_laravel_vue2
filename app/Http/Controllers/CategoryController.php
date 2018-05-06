@@ -94,11 +94,15 @@ class CategoryController extends Controller
 
   public function activate(Request $request)
   {
-      //
+    $category = Category::findOrFail($request->id);
+    $category->active = '1';
+    $category->save();
   }
 
   public function deactivate(Request $request)
   {
-      //
+    $category = Category::findOrFail($request->id);
+    $category->active = '0';
+    $category->save();
   }
 }

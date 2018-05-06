@@ -43,9 +43,16 @@
                                   <button type="button" @click="openModal('category', 'update', category)" class="btn btn-warning btn-sm">
                                     <i class="icon-pencil"></i>
                                   </button> &nbsp;
-                                  <button type="button" class="btn btn-danger btn-sm">
-                                    <i class="icon-trash"></i>
-                                  </button>
+                                  <template v-if="category.active">
+                                    <button @click="categoryDesactivate(category.id)" type="button" class="btn btn-danger btn-sm">
+                                      <i class="icon-trash"></i>
+                                    </button>
+                                  </template>
+                                  <template v-else>
+                                    <button @click="categoryActivate(category.id)" type="button" class="btn btn-info btn-sm">
+                                      <i class="fa fa-check"></i>
+                                    </button>
+                                  </template>
                               </td>
                               <td v-text="category.name"></td>
                               <td v-text="category.description"></td>
@@ -256,7 +263,53 @@
             }
           }
         }
-      } // end openModal
+      }, // end openModal
+      categoryDesactivate(id){
+        swal({
+          title: "Estas seguro de desactivar esta categoria?",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            let me = this
+            axios.put('index.php/category/deactivate', {
+              'id' : id
+            }).then(function(response){
+              swal("Categoria desactivada!", {
+              icon: "success",
+              });
+              me.categoryList()
+            }).catch(function(error){
+              console.log(error)
+            })
+          }
+        });
+      },
+      categoryActivate(id){
+        swal({
+          title: "Estas seguro de activar esta categoria?",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            let me = this
+            axios.put('index.php/category/activate', {
+              'id' : id
+            }).then(function(response){
+              swal("Categoria activada!", {
+              icon: "success",
+              });
+              me.categoryList()
+            }).catch(function(error){
+              console.log(error)
+            })
+          }
+        });
+      }
     },
     mounted() {
       this.categoryList()
