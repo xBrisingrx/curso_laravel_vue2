@@ -17,3 +17,4 @@ Route::get('/', function () {
 
 Route::get('/category', 'CategoryController@index');
 Route::post('/category/store', 'CategoryController@store');
+Route::put('/category/update', 'CategoryController@update');

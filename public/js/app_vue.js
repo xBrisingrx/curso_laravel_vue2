@@ -33557,6 +33557,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      category_id: 0,
       name: '',
       description: '',
       arrayCategory: [],
@@ -33592,6 +33593,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         console.log(error);
       });
     },
+    updateCategory: function updateCategory() {
+      if (this.validateCategory()) {
+        return;
+      }
+      var me = this;
+      axios.put('index.php/category/update', {
+        'name': this.name,
+        'description': this.description,
+        'id': this.category_id
+      }).then(function (response) {
+        me.closeModal();
+        me.categoryList();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+
+    // Validamos que el name no sea vacio
     validateCategory: function validateCategory() {
       this.categoryError = 0;
       this.categoryErrorMsg = [];
@@ -33629,9 +33648,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 {
                   this.actionType = 2;
                   this.modal = 1;
-                  this.modalTitle = 'Registrar categoria';
-                  this.name = '';
-                  this.description = '';
+                  this.modalTitle = 'Actualizar categoria';
+                  this.category_id = data.id;
+                  this.name = data.name;
+                  this.description = data.description;
                   break;
                 }
             }
@@ -33943,7 +33963,12 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-primary",
-                        attrs: { type: "button" }
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            _vm.updateCategory()
+                          }
+                        }
                       },
                       [_vm._v("Actualizar")]
                     )

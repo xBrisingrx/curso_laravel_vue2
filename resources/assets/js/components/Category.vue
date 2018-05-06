@@ -120,7 +120,7 @@
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
                       <button v-if="actionType==1" type="button" class="btn btn-primary" @click="storeCategory()">Guardar</button>
-                      <button v-if="actionType==2" type="button" class="btn btn-primary">Actualizar</button>
+                      <button v-if="actionType==2" type="button" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
                   </div>
               </div>
               <!-- /.modal-content -->
@@ -159,6 +159,7 @@
   export default {
     data(){
       return {
+        category_id : 0,
         name : '',
         description : '',
         arrayCategory: [],
@@ -166,7 +167,7 @@
         modalTitle : '',
         actionType : 0,
         categoryError : 0,
-        categoryErrorMsg : []
+        categoryErrorMsg : [],
       }
     },
     methods : {
@@ -187,6 +188,22 @@
           axios.post('index.php/category/store', {
             'name': this.name,
             'description': this.description
+          }).then(function(response){
+            me.closeModal()
+            me.categoryList()
+          }).catch(function(error){
+            console.log(error)
+          })
+      },
+      updateCategory(){
+        if (this.validateCategory()) {
+          return
+        }
+        let me = this
+          axios.put('index.php/category/update', {
+            'name': this.name,
+            'description': this.description,
+            'id' : this.category_id
           }).then(function(response){
             me.closeModal()
             me.categoryList()
@@ -230,9 +247,10 @@
               {
                 this.actionType = 2
                 this.modal = 1
-                this.modalTitle = 'Registrar categoria'
-                this.name = ''
-                this.description = ''
+                this.modalTitle = 'Actualizar categoria'
+                this.category_id = data.id
+                this.name = data.name
+                this.description = data.description
                 break
               }
             }
