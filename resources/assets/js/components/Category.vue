@@ -99,10 +99,9 @@
                   <div class="modal-body">
                       <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                           <div class="form-group row">
-                              <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
+                              <label class="col-md-3 form-control-label" for="text-input">Nombre (*)</label>
                               <div class="col-md-9">
                                   <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
-                                  <span class="help-block">(*) Ingrese el nombre de la categoría</span>
                               </div>
                           </div>
                           <div class="form-group row">
@@ -110,6 +109,11 @@
                               <div class="col-md-9">
                                   <input type="text" v-model="description" class="form-control" placeholder="Ingrese descripcion">
                               </div>
+                          </div>
+                          <div v-show="categoryError" class="form-group row div-error">
+                            <div class="text-center text-error">
+                              <div v-for="error in categoryErrorMsg" :key="error" v-text="error"></div>
+                            </div>
                           </div>
                       </form>
                   </div>
@@ -160,7 +164,9 @@
         arrayCategory: [],
         modal : 0,
         modalTitle : '',
-        actionType : 0
+        actionType : 0,
+        categoryError : 0,
+        categoryErrorMsg : []
       }
     },
     methods : {
@@ -174,22 +180,37 @@
         })
       },
       storeCategory(){
+        if (this.validateCategory()) {
+          return
+        } 
         let me = this
-        axios.post('index.php/category/store', {
-          'name': this.name,
-          'description': this.description
-        }).then(function(response){
-          me.closeModal()
-          me.categoryList()
-        }).catch(function(error){
-          console.log(error)
-        })
+          axios.post('index.php/category/store', {
+            'name': this.name,
+            'description': this.description
+          }).then(function(response){
+            me.closeModal()
+            me.categoryList()
+          }).catch(function(error){
+            console.log(error)
+          })
+      },
+      // Validamos que el name no sea vacio
+      validateCategory(){
+        this.categoryError = 0
+        this.categoryErrorMsg = []
+        // Si el nombre esta vacio asignamos el msg de error al array
+        if (!this.name) this.categoryErrorMsg.push('El nombre de la categoria no puede estar vacio.') 
+        // Si el array tiene un mensaje adentro categoryError le asignamos true/1
+        if(this.categoryErrorMsg.length) this.categoryError = 1
+        return this.categoryError
       },
       closeModal(){
         this.modal = 0
         this.modalTitle = ''
         this.name = ''
         this.description = ''
+        this.categoryError = 0
+        this.categoryErrorMsg = []
       },
       openModal(model, action, data = []){
         switch(model) {
@@ -235,5 +256,13 @@
     opacity: 1 !important;
     position: absolute !important;
     background-color: #3c29297a !important;
+  }
+  .div-error{
+    display: flex;
+    justify-content: center;
+  }
+  .text-error{
+    color: red !important;
+    font-weight: bold;
   }
 </style>
