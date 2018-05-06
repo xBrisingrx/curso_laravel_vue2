@@ -108,14 +108,14 @@
                           <div class="form-group row">
                               <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                               <div class="col-md-9">
-                                  <input type="text" v-model="descripcion" class="form-control" placeholder="Ingrese descripcion">
+                                  <input type="text" v-model="description" class="form-control" placeholder="Ingrese descripcion">
                               </div>
                           </div>
                       </form>
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
-                      <button v-if="actionType==1" type="button" class="btn btn-primary">Guardar</button>
+                      <button v-if="actionType==1" type="button" class="btn btn-primary" @click="storeCategory()">Guardar</button>
                       <button v-if="actionType==2" type="button" class="btn btn-primary">Actualizar</button>
                   </div>
               </div>
@@ -174,7 +174,16 @@
         })
       },
       storeCategory(){
-
+        let me = this
+        axios.post('index.php/category/store', {
+          'name': this.name,
+          'description': this.description
+        }).then(function(response){
+          me.closeModal()
+          me.categoryList()
+        }).catch(function(error){
+          console.log(error)
+        })
       },
       closeModal(){
         this.modal = 0

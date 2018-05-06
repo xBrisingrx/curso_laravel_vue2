@@ -33571,7 +33571,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         console.log(error);
       });
     },
-    storeCategory: function storeCategory() {},
+    storeCategory: function storeCategory() {
+      var me = this;
+      axios.post('index.php/category/store', {
+        'name': this.name,
+        'description': this.description
+      }).then(function (response) {
+        me.closeModal();
+        me.categoryList();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
     closeModal: function closeModal() {
       this.modal = 0;
       this.modalTitle = '';
@@ -33828,8 +33839,8 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.descripcion,
-                              expression: "descripcion"
+                              value: _vm.description,
+                              expression: "description"
                             }
                           ],
                           staticClass: "form-control",
@@ -33837,13 +33848,13 @@ var render = function() {
                             type: "text",
                             placeholder: "Ingrese descripcion"
                           },
-                          domProps: { value: _vm.descripcion },
+                          domProps: { value: _vm.description },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.descripcion = $event.target.value
+                              _vm.description = $event.target.value
                             }
                           }
                         })
@@ -33873,7 +33884,12 @@ var render = function() {
                       "button",
                       {
                         staticClass: "btn btn-primary",
-                        attrs: { type: "button" }
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            _vm.storeCategory()
+                          }
+                        }
                       },
                       [_vm._v("Guardar")]
                     )

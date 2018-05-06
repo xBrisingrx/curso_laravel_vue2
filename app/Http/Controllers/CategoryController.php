@@ -39,7 +39,7 @@ class CategoryController extends Controller
       $category = new Category();
       $category->name = $request->name;
       $category->description = $request->description;
-      $category->condition = '1';
+      $category->active = '1';
       $category->save();
   }
 
@@ -77,7 +77,7 @@ class CategoryController extends Controller
     $category = Category::findOrFail($request->id);
     $category->name = $request->name;
     $category->description = $request->description;
-    $category->condition = '1';
+    $category->active = '1';
     $category->save();
   }
 
