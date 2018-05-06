@@ -33553,6 +33553,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -33657,8 +33664,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
           }
       }
-    } // end openModal
+    },
+    // end openModal
+    categoryDesactivate: function categoryDesactivate(id) {
+      var _this = this;
 
+      swal({
+        title: "Estas seguro de desactivar esta categoria?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true
+      }).then(function (willDelete) {
+        if (willDelete) {
+          var me = _this;
+          axios.put('index.php/category/deactivate', {
+            'id': id
+          }).then(function (response) {
+            swal("Categoria desactivada!", {
+              icon: "success"
+            });
+            me.categoryList();
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }
+      });
+    },
+    categoryActivate: function categoryActivate(id) {
+      var _this2 = this;
+
+      swal({
+        title: "Estas seguro de activar esta categoria?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true
+      }).then(function (willDelete) {
+        if (willDelete) {
+          var me = _this2;
+          axios.put('index.php/category/activate', {
+            'id': id
+          }).then(function (response) {
+            swal("Categoria activada!", {
+              icon: "success"
+            });
+            me.categoryList();
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }
+      });
+    }
   },
   mounted: function mounted() {
     this.categoryList();
@@ -33712,23 +33767,57 @@ var render = function() {
                 "tbody",
                 _vm._l(_vm.arrayCategory, function(category) {
                   return _c("tr", { key: category.id }, [
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-warning btn-sm",
-                          attrs: { type: "button" },
-                          on: {
-                            click: function($event) {
-                              _vm.openModal("category", "update", category)
+                    _c(
+                      "td",
+                      [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-warning btn-sm",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                _vm.openModal("category", "update", category)
+                              }
                             }
-                          }
-                        },
-                        [_c("i", { staticClass: "icon-pencil" })]
-                      ),
-                      _vm._v("  \n                                "),
-                      _vm._m(3, true)
-                    ]),
+                          },
+                          [_c("i", { staticClass: "icon-pencil" })]
+                        ),
+                        _vm._v("  \n                                "),
+                        category.active
+                          ? [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-danger btn-sm",
+                                  attrs: { type: "button" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.categoryDesactivate(category.id)
+                                    }
+                                  }
+                                },
+                                [_c("i", { staticClass: "icon-trash" })]
+                              )
+                            ]
+                          : [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-info btn-sm",
+                                  attrs: { type: "button" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.categoryActivate(category.id)
+                                    }
+                                  }
+                                },
+                                [_c("i", { staticClass: "fa fa-check" })]
+                              )
+                            ]
+                      ],
+                      2
+                    ),
                     _vm._v(" "),
                     _c("td", {
                       domProps: { textContent: _vm._s(category.name) }
@@ -33757,7 +33846,7 @@ var render = function() {
             ]
           ),
           _vm._v(" "),
-          _vm._m(4)
+          _vm._m(3)
         ])
       ])
     ]),
@@ -33980,7 +34069,7 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm._m(5)
+    _vm._m(4)
   ])
 }
 var staticRenderFns = [
@@ -34054,16 +34143,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Estado")])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      { staticClass: "btn btn-danger btn-sm", attrs: { type: "button" } },
-      [_c("i", { staticClass: "icon-trash" })]
-    )
   },
   function() {
     var _vm = this
