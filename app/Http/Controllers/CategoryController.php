@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Category;
 
 class CategoryController extends Controller
@@ -14,8 +15,19 @@ class CategoryController extends Controller
    */
   public function index()
   {
-    $categories = Category::all();
-    return $categories;
+    // $categories = Category::all(); 
+    $categories = Category::paginate(2);
+    return [
+      'pagination' => [
+        'total'        => $categories->total(),
+        'current_page' => $categories->currentPage(),
+        'per_page'     => $categories->perPage(),
+        'last_page'    => $categories->lastPage(),
+        'from'         => $categories->firstItem(),
+        'to'           => $categories->lastItem(),
+      ],
+      'categories' => $categories
+    ];
   }
 
   /**
