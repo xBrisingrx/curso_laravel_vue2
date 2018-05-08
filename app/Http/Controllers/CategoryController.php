@@ -13,10 +13,19 @@ class CategoryController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index()
+  public function index(Request $request)
   {
     // $categories = Category::all(); 
-    $categories = Category::paginate(2);
+    $search = $request->search;
+    $criteria = $request->criteria;
+
+    if ($search == '') {
+      $categories = Category::orderBy('id', 'desc')->paginate(3);
+    } else {
+      // El % $var % son comodien que indican que el texto puede estar al inicio, centro o al final
+      $categories = $categories = Category::where($criteria, 'like', '%'. $search .'%')->orderBy('id', 'desc')->paginate(3);
+    }
+
     return [
       'pagination' => [
         'total'        => $categories->total(),

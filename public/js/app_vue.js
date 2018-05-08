@@ -33551,6 +33551,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -33572,7 +33575,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         'from': 0,
         'to': 0
       },
-      offset: 3
+      offset: 3,
+      criteria: 'name',
+      search: ''
     };
   },
 
@@ -33604,9 +33609,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   methods: {
-    categoryList: function categoryList(page) {
+    categoryList: function categoryList() {
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+      var search = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var criteria = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'name';
+
       var me = this;
-      var url = 'index.php/category?page=' + page;
+      var url = 'index.php/category?page=' + page + '&search=' + search + '&criteria=' + criteria;
       axios.get(url).then(function (response) {
         var resp = response.data;
         me.arrayCategory = resp.categories.data;
@@ -33615,12 +33624,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         console.log(error);
       });
     },
-    changePage: function changePage(page) {
+    changePage: function changePage(page, search, criteria) {
       var me = this;
       //Actualiza la pagina actual
       me.pagination.current_page = page;
       // Enviar la peticion para visualizar la data de esa pagina
-      me.categoryList(page);
+      me.categoryList(page, search, criteria);
     },
     storeCategory: function storeCategory() {
       if (this.validateCategory()) {
@@ -33753,7 +33762,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   mounted: function mounted() {
-    this.categoryList();
+    this.categoryList(1, this.search, this.criteria);
   }
 });
 
@@ -33792,13 +33801,104 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "card-body" }, [
-          _vm._m(1),
+          _c("div", { staticClass: "form-group row" }, [
+            _c("div", { staticClass: "col-md-6" }, [
+              _c("div", { staticClass: "input-group" }, [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.criteria,
+                        expression: "criteria"
+                      }
+                    ],
+                    staticClass: "form-control col-md-3",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.criteria = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "name" } }, [
+                      _vm._v("Nombre")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "description" } }, [
+                      _vm._v("Descripción")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.search,
+                      expression: "search"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text", placeholder: "Texto a buscar" },
+                  domProps: { value: _vm.search },
+                  on: {
+                    keyup: function($event) {
+                      if (
+                        !("button" in $event) &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      _vm.categoryList(1, _vm.search, _vm.criteria)
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.search = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        _vm.categoryList(1, _vm.search, _vm.criteria)
+                      }
+                    }
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-search" }),
+                    _vm._v(" Buscar\n                            ")
+                  ]
+                )
+              ])
+            ])
+          ]),
           _vm._v(" "),
           _c(
             "table",
             { staticClass: "table table-bordered table-striped table-sm" },
             [
-              _vm._m(2),
+              _vm._m(1),
               _vm._v(" "),
               _c(
                 "tbody",
@@ -33898,7 +33998,11 @@ var render = function() {
                           on: {
                             click: function($event) {
                               $event.preventDefault()
-                              _vm.changePage(_vm.pagination.current_page - 1)
+                              _vm.changePage(
+                                _vm.pagination.current_page - 1,
+                                _vm.search,
+                                _vm.criteria
+                              )
                             }
                           }
                         },
@@ -33923,7 +34027,7 @@ var render = function() {
                         on: {
                           click: function($event) {
                             $event.preventDefault()
-                            _vm.changePage(page)
+                            _vm.changePage(page, _vm.search, _vm.criteria)
                           }
                         }
                       })
@@ -33941,7 +34045,11 @@ var render = function() {
                           on: {
                             click: function($event) {
                               $event.preventDefault()
-                              _vm.changePage(_vm.pagination.current_page + 1)
+                              _vm.changePage(
+                                _vm.pagination.current_page + 1,
+                                _vm.search,
+                                _vm.criteria
+                              )
                             }
                           }
                         },
@@ -34175,7 +34283,7 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _vm._m(3)
+    _vm._m(2)
   ])
 }
 var staticRenderFns = [
@@ -34191,47 +34299,6 @@ var staticRenderFns = [
       ]),
       _vm._v(" "),
       _c("li", { staticClass: "breadcrumb-item active" }, [_vm._v("Dashboard")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c(
-            "select",
-            {
-              staticClass: "form-control col-md-3",
-              attrs: { id: "opcion", name: "opcion" }
-            },
-            [
-              _c("option", { attrs: { value: "nombre" } }, [_vm._v("Nombre")]),
-              _vm._v(" "),
-              _c("option", { attrs: { value: "descripcion" } }, [
-                _vm._v("Descripción")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "texto",
-              name: "texto",
-              placeholder: "Texto a buscar"
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-            [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Buscar")]
-          )
-        ])
-      ])
     ])
   },
   function() {
