@@ -2,14 +2,14 @@
   <main class="main">
       <!-- Breadcrumb -->
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+          <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
       </ol>
       <div class="container-fluid">
           <!-- Ejemplo de tabla Listado -->
           <div class="card">
               <div class="card-header">
-                  <i class="fa fa-align-justify"></i> Categorías
-                  <button type="button" @click="openModal('category', 'store')" class="btn btn-secondary">
+                  <i class="fa fa-align-justify"></i> Articulos
+                  <button type="button" @click="openModal('article', 'store')" class="btn btn-secondary">
                       <i class="icon-plus"></i>&nbsp;Nuevo
                   </button>
               </div>
@@ -22,8 +22,8 @@
                                 <option value="description">Descripción</option>
                               </select>
                               <!-- @ es una abreviacion de V-ON -->
-                              <input type="text" v-model="search" @keyup.enter="categoryList( 1 , search , criteria )"  class="form-control" placeholder="Texto a buscar">
-                              <button type="submit" @click="categoryList( 1 , search , criteria )" class="btn btn-primary">
+                              <input type="text" v-model="search" @keyup.enter="articleList( 1 , search , criteria )"  class="form-control" placeholder="Texto a buscar">
+                              <button type="submit" @click="articleList( 1 , search , criteria )" class="btn btn-primary">
                                 <i class="fa fa-search"></i> Buscar
                               </button>
                           </div>
@@ -33,32 +33,40 @@
                       <thead>
                           <tr>
                               <th>Opciones</th>
+                              <th>Codigo</th>
                               <th>Nombre</th>
+                              <th>Categoria</th>
+                              <th>Precio venta</th>
+                              <th>Stock</th>
                               <th>Descripción</th>
                               <th>Estado</th>
                           </tr>
                       </thead>
                       <tbody>
-                          <tr v-for="category in arrayCategory" :key="category.id">
+                          <tr v-for="article in arrayArticle" :key="article.id">
                               <td>
-                                  <button type="button" @click="openModal('category', 'update', category)" class="btn btn-warning btn-sm">
+                                  <button type="button" @click="openModal('article', 'update', article)" class="btn btn-warning btn-sm">
                                     <i class="icon-pencil"></i>
                                   </button> &nbsp;
-                                  <template v-if="category.active">
-                                    <button @click="categoryDesactivate(category.id)" type="button" class="btn btn-danger btn-sm">
+                                  <template v-if="article.active">
+                                    <button @click="articleDesactivate(article.id)" type="button" class="btn btn-danger btn-sm">
                                       <i class="icon-trash"></i>
                                     </button>
                                   </template>
                                   <template v-else>
-                                    <button @click="categoryActivate(category.id)" type="button" class="btn btn-info btn-sm">
+                                    <button @click="articleActivate(article.id)" type="button" class="btn btn-info btn-sm">
                                       <i class="fa fa-check"></i>
                                     </button>
                                   </template>
                               </td>
-                              <td v-text="category.name"></td>
-                              <td v-text="category.description"></td>
+                              <td v-text="article.code"></td>
+                              <td v-text="article.name"></td>
+                              <td v-text="article.category_name"></td>
+                              <td v-text="article.sale_price"></td>
+                              <td v-text="article.stock"></td>
+                              <td v-text="article.description"></td>
                               <td>
-                                  <div v-if="category.active">
+                                  <div v-if="article.active">
                                     <span class="badge badge-success">Activo</span>
                                   </div>
                                   <div v-else>
@@ -98,9 +106,39 @@
                   <div class="modal-body">
                       <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                           <div class="form-group row">
+                              <label class="col-md-3 form-control-label" for="text-input">Categorias (*)</label>
+                              <div class="col-md-9">
+                                  <select class='form-control' v-model='category_id'>
+                                    <option value="0" disabled> Seleccione </option> 
+                                    <option v-for="category in categoriesArray" 
+                                            :key="category.id" 
+                                            :value="category.id"
+                                            v-text="category.name"> </option> 
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="form-group row">
+                              <label class="col-md-3 form-control-label" for="text-input">Codigo (*)</label>
+                              <div class="col-md-9">
+                                  <input type="text" v-model="code" class="form-control" placeholder="Codigo del articulo">
+                              </div>
+                          </div>  
+                          <div class="form-group row">
                               <label class="col-md-3 form-control-label" for="text-input">Nombre (*)</label>
                               <div class="col-md-9">
-                                  <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
+                                  <input type="text" v-model="name" class="form-control" placeholder="Nombre de articulo">
+                              </div>
+                          </div>
+                          <div class="form-group row">
+                              <label class="col-md-3 form-control-label" for="text-input">Precio (*)</label>
+                              <div class="col-md-9">
+                                  <input type="text" v-model="sale_price" class="form-control" placeholder="Precio venta">
+                              </div>
+                          </div>
+                          <div class="form-group row">
+                              <label class="col-md-3 form-control-label" for="text-input">Stock (*)</label>
+                              <div class="col-md-9">
+                                  <input type="text" v-model="stock" class="form-control" placeholder="Stock de articulo">
                               </div>
                           </div>
                           <div class="form-group row">
@@ -109,17 +147,17 @@
                                   <input type="text" v-model="description" class="form-control" placeholder="Ingrese descripcion">
                               </div>
                           </div>
-                          <div v-show="categoryError" class="form-group row div-error">
+                          <div v-show="articleError" class="form-group row div-error">
                             <div class="text-center text-error">
-                              <div v-for="error in categoryErrorMsg" :key="error" v-text="error"></div>
+                              <div v-for="error in articleErrorMsg" :key="error" v-text="error"></div>
                             </div>
                           </div>
                       </form>
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
-                      <button v-if="actionType==1" type="button" class="btn btn-primary" @click="storeCategory()">Guardar</button>
-                      <button v-if="actionType==2" type="button" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
+                      <button v-if="actionType==1" type="button" class="btn btn-primary" @click="storeArticle()">Guardar</button>
+                      <button v-if="actionType==2" type="button" class="btn btn-primary" @click="updateArticle()">Actualizar</button>
                   </div>
               </div>
               <!-- /.modal-content -->
@@ -132,13 +170,13 @@
           <div class="modal-dialog modal-danger" role="document">
               <div class="modal-content">
                   <div class="modal-header">
-                      <h4 class="modal-title">Eliminar Categoría</h4>
+                      <h4 class="modal-title">Eliminar articulo</h4>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                       </button>
                   </div>
                   <div class="modal-body">
-                      <p>Estas seguro de eliminar la categoría?</p>
+                      <p>Estas seguro de eliminar la articulo?</p>
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -158,15 +196,21 @@
   export default {
     data(){
       return {
+        article_id : 0,
         category_id : 0,
+        category_name: '',
+        code: '',
         name : '',
+        sale_price: 0,
+        stock: 0,
         description : '',
-        arrayCategory: [],
+        arrayArticle: [],
         modal : 0,
         modalTitle : '',
         actionType : 0,
-        categoryError : 0,
-        categoryErrorMsg : [],
+        articleError : 0,
+        articleErrorMsg : [],
+        categoriesArray: [],
         pagination : {
           'total' : 0,
           'current_page' : 0,
@@ -208,13 +252,24 @@
       }
     },
     methods : {
-      categoryList(page = 1, search = '', criteria = 'name'){
+      articleList(page = 1, search = '', criteria = 'name'){
         let me = this
-        var url = 'index.php/category?page=' + page + '&search=' + search + '&criteria=' + criteria
+        var url = 'index.php/article?page=' + page + '&search=' + search + '&criteria=' + criteria
         axios.get(url).then( function (response){
           var resp = response.data
-          me.arrayCategory = resp.categories.data
+          me.arrayArticle = resp.articles.data
           me.pagination = resp.pagination
+        })
+        .catch(function(error){
+          console.log(error)
+        })
+      },
+      selectCategory(){
+        let me = this
+        var url = 'index.php/category/selectCategory'
+        axios.get(url).then( function (response){
+          var resp = response.data
+          me.categoriesArray = resp.categories
         })
         .catch(function(error){
           console.log(error)
@@ -225,88 +280,108 @@
         //Actualiza la pagina actual
         me.pagination.current_page = page
         // Enviar la peticion para visualizar la data de esa pagina
-        me.categoryList(page, search , criteria)
+        me.articleList(page, search , criteria)
       },
-      storeCategory(){
-        if (this.validateCategory()) {
+      storeArticle(){
+        if (this.validateArticle()) {
           return
         } 
         let me = this
-          axios.post('index.php/category/store', {
+          axios.post('index.php/article/store', {
+            'code': this.code,
+            'category_id': this.category_id,
             'name': this.name,
+            'sale_price': this.sale_price,
+            'stock': this.stock,
             'description': this.description
           }).then(function(response){
             me.closeModal()
-            me.categoryList()
+            me.articleList()
           }).catch(function(error){
             console.log(error)
           })
       },
-      updateCategory(){
-        if (this.validateCategory()) {
+      updateArticle(){
+        if (this.validateArticle()) {
           return
         }
         let me = this
-          axios.put('index.php/category/update', {
+          axios.put('index.php/article/update', {
             'name': this.name,
             'description': this.description,
-            'id' : this.category_id
+            'id' : this.article_id
           }).then(function(response){
             me.closeModal()
-            me.categoryList()
+            me.articleList()
           }).catch(function(error){
             console.log(error)
           })
       },
       // Validamos que el name no sea vacio
-      validateCategory(){
-        this.categoryError = 0
-        this.categoryErrorMsg = []
+      validateArticle(){
+        this.articleError = 0
+        this.articleErrorMsg = []
+        
+        if ( this.category_id == 0 ) this.articleErrorMsg.push('Debe seleccionar una categoria.') 
         // Si el nombre esta vacio asignamos el msg de error al array
-        if (!this.name) this.categoryErrorMsg.push('El nombre de la categoria no puede estar vacio.') 
-        // Si el array tiene un mensaje adentro categoryError le asignamos true/1
-        if(this.categoryErrorMsg.length) this.categoryError = 1
-        return this.categoryError
+        if (!this.name) this.articleErrorMsg.push('El nombre del articulo no puede estar vacio.') 
+        if (!this.stock) this.articleErrorMsg.push('Stock debe ser un numero y no puede estar vacio.')   
+        // Si el array tiene un mensaje adentro articleError le asignamos true/1
+        if(this.articleErrorMsg.length) this.articleError = 1
+        return this.articleError
       },
       closeModal(){
         this.modal = 0
         this.modalTitle = ''
+        this.category_id = 0
+        this.code = ''
         this.name = ''
+        this.sale_price = 0
+        this.stock = 0
         this.description = ''
-        this.categoryError = 0
-        this.categoryErrorMsg = []
+        this.articleError = 0
+        this.articleErrorMsg = []
       },
       openModal(model, action, data = []){
         switch(model) {
-          case "category":
+          case "article":
           {
             switch(action){
               case "store":
               {
                 this.actionType = 1
                 this.modal = 1
-                this.modalTitle = 'Registrar categoria'
+                this.modalTitle = 'Registrar articulo'
+                this.category_id = 0
+                this.code = ''
                 this.name = ''
-                this.description = ''
+                this.sale_price = 0
+                this.stock = 0
+                this.description = '' 
                 break
               }
               case "update":
               {
                 this.actionType = 2
                 this.modal = 1
-                this.modalTitle = 'Actualizar categoria'
-                this.category_id = data.id
+                this.modalTitle = 'Actualizar articulo'
+                this.category_id = data.category_id
+                this.article_id = data.id
+                this.code = data.code
                 this.name = data.name
+                this.sale_price = data.sale_price
+                this.stock = data.stock
                 this.description = data.description
                 break
               }
             }
           }
         }
+        this.selectCategory()
       }, // end openModal
-      categoryDesactivate(id){
+      articleDesactivate(id){
         swal({
-          title: "Estas seguro de desactivar esta categoria?",
+          title: "Estas seguro de desactivar esta articulo?",
           icon: "warning",
           buttons: true,
           dangerMode: true,
@@ -314,22 +389,22 @@
         .then((willDelete) => {
           if (willDelete) {
             let me = this
-            axios.put('index.php/category/deactivate', {
+            axios.put('index.php/article/deactivate', {
               'id' : id
             }).then(function(response){
-              swal("Categoria desactivada!", {
+              swal("articulo desactivado!", {
               icon: "success",
               });
-              me.categoryList()
+              me.articleList()
             }).catch(function(error){
               console.log(error)
             })
           }
         });
       },
-      categoryActivate(id){
+      articleActivate(id){
         swal({
-          title: "Estas seguro de activar esta categoria?",
+          title: "Estas seguro de activar esta articulo?",
           icon: "warning",
           buttons: true,
           dangerMode: true,
@@ -337,13 +412,13 @@
         .then((willDelete) => {
           if (willDelete) {
             let me = this
-            axios.put('index.php/category/activate', {
+            axios.put('index.php/article/activate', {
               'id' : id
             }).then(function(response){
-              swal("Categoria activada!", {
+              swal("Articulo activado!", {
               icon: "success",
               });
-              me.categoryList()
+              me.articleList()
             }).catch(function(error){
               console.log(error)
             })
@@ -352,7 +427,7 @@
       }
     },
     mounted() {
-      this.categoryList( 1 , this.search  , this.criteria)
+      this.articleList( 1 , this.search  , this.criteria)
     }
   }
 </script>

@@ -21,6 +21,7 @@ Route::post('/category/store', 'CategoryController@store');
 Route::put('/category/update', 'CategoryController@update');
 Route::put('/category/deactivate', 'CategoryController@deactivate');
 Route::put('/category/activate', 'CategoryController@activate');
+Route::get('/category/selectCategory', 'CategoryController@selectCategory');
 
 // Rutas para articulos
 Route::get('/article', 'ArticleController@index');

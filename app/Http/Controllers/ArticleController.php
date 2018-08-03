@@ -16,14 +16,14 @@ class ArticleController extends Controller
     if ($search == '') {
       $articles = Article::join('categories', 'articles.category_id', '=', 'categories.id')
       											->select('articles.id', 'articles.category_id', 'articles.code', 'articles.name', 
-      																'articles.sale_price', 'articles.stock', 'articles.desciption', 'articles.active',
+      																'articles.sale_price', 'articles.stock', 'articles.description', 'articles.active',
       																'categories.name as category_name')
       												->orderBy('articles.id', 'desc')->paginate(3);
     } else {
       // El % $var % son comodien que indican que el texto puede estar al inicio, centro o al final
       $articles = Article::join('categories', 'articles.category_id', '=', 'categories.id')
       											->select('articles.id', 'articles.category_id', 'articles.code', 'articles.name', 
-      																'articles.sale_price', 'articles.stock', 'articles.desciption', 'articles.active',
+      																'articles.sale_price', 'articles.stock', 'articles.description', 'articles.active',
       																'categories.name as category_name')
       												->where('articles.'.$criteria, 'like', '%'. $search .'%')
       													->orderBy('articles.id', 'desc')->paginate(3);
